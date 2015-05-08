@@ -1,9 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:gravity="center_horizontal"
+    android:paddingTop="100dp"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:layout_height="wrap_content">
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="160dp" />
+    <TextView
+        android:id="@+id/red_txt"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20sp"
+        android:layout_marginRight="16dp"
+        android:text="Team A" />
+
+    <TextView
+        android:id="@+id/green_txt"
+        android:layout_marginLeft="16dp"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:textSize="20sp"
+        android:text="Team B" />
+
+
 </LinearLayout>

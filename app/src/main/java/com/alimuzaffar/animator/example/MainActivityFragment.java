@@ -1,8 +1,11 @@
 package com.alimuzaffar.animator.example;
 
+import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
+import android.content.Context;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -47,17 +50,31 @@ public class MainActivityFragment extends Fragment {
         final View line1 = headerTwo.findViewById(R.id.line1);
         final View line2 = headerTwo.findViewById(R.id.line2);
 
-        final TextView redTxt = (TextView) view.findViewById(R.id.red_txt);
-        final TextView greenTxt = (TextView) view.findViewById(R.id.green_txt);
+        final TextView redTxt = (TextView) header.findViewById(R.id.red_txt);
+        final TextView greenTxt = (TextView) header.findViewById(R.id.green_txt);
         final TextView team1 = (TextView) headerTwo.findViewById(R.id.team1);
         final TextView team2 = (TextView) headerTwo.findViewById(R.id.team2);
         final TextView vs = (TextView) headerTwo.findViewById(R.id.vs);
 
+        //animate text to new header
+        int[] team1XYOrig = new int[2];
+        team1.getLocationOnScreen(team1XYOrig);
+
+        int[] team2XYOrig = new int[2];
+        team2.getLocationOnScreen(team2XYOrig);
+
+
         final float defaultTextSize = redTxt.getTextSize();
-        final float minTextSize = 16.0f;
+        final float minTextSize = spToPx(getActivity(), 15);
 
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+
+            int[] redXYOrig = null;
+            int[] greenXYOrig = null;
+            int[] venueXYOrig = null;
+
             int viewHeight = -1;
+            boolean postAnimatedState = false;
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -72,7 +89,6 @@ public class MainActivityFragment extends Fragment {
                 int[] xy2 = new int[2];
                 headerTwo.getLocationOnScreen(xy2);
 
-                Log.d("HERE", String.format("X=%d, Y=%d",xy[0], xy[1]));
                 int size = xy[1];
                 float textSize = defaultTextSize;
                 if (viewHeight < 0) {
@@ -83,7 +99,7 @@ public class MainActivityFragment extends Fragment {
                     }
                 }
 
-                if (size < 0) {
+                if (size <= 0) {
                     size = 0;
                 }
 
@@ -93,8 +109,6 @@ public class MainActivityFragment extends Fragment {
                 }
 
                 if (size < 50) {
-                    red.setVisibility(View.INVISIBLE);
-                    green.setVisibility(View.INVISIBLE);
                     textSize = minTextSize;
                 } else {
                     red.setVisibility(View.VISIBLE);
@@ -126,36 +140,80 @@ public class MainActivityFragment extends Fragment {
                     int[] greenXY = new int[2];
                     greenTxt.getLocationOnScreen(greenXY);
 
-                    Log.d("HERE", String.format("TEAM 1 X=%d, Y=%d", team1XY[0], team1XY[1]));
+                    if (redXYOrig == null) {
+                        redXYOrig = new int[2];
+                        greenXYOrig = new int[2];
+                        venueXYOrig = new int[2];
+                        redTxt.getLocationOnScreen(redXYOrig);
+                        greenTxt.getLocationOnScreen(greenXYOrig);
+                        venue.getLocationOnScreen(venueXYOrig);
+                    }
 
-                    if (venue.getVisibility() == View.VISIBLE && xy[1] <= xy2[1] + headerTwo.getMeasuredHeight()) {
+                    Log.d("HERE", String.format("XY2 X=%d, Y=%d, VIEW %d", xy2[0], xy2[1], redXY[1] + red.getMeasuredHeight()));
 
-                        venue.setVisibility(View.GONE);
-                        line1.setVisibility(View.VISIBLE);
-                        line2.setVisibility(View.VISIBLE);
+                    if (!postAnimatedState && xy[1] < size) {
+                        postAnimatedState = true;
                         AnimatorSet set = new AnimatorSet();
-                        set.playTogether(
-                                ObjectAnimator.ofFloat(redTxt, "x", 0, team1XY[0] - redXY[0]),
-                                ObjectAnimator.ofFloat(redTxt, "y", 0, team1XY[1] - redXY[1]),
-                                ObjectAnimator.ofFloat(greenTxt, "x", 0, team2XY[0] - greenXY[0]),
-                                ObjectAnimator.ofFloat(greenTxt, "y", 0, team2XY[1] - greenXY[1])
-                        );
-                        set.setDuration(300).start();
+                        set.play(ObjectAnimator.ofFloat(redTxt, "x", 0))
+                                .with(ObjectAnimator.ofFloat(redTxt, "y", team1XY[1]));
 
-                    } else if (venue.getVisibility() == View.GONE && xy[1] > xy2[1] + headerTwo.getMeasuredHeight()) {
-                        venue.setVisibility(View.VISIBLE);
-                        line1.setVisibility(View.INVISIBLE);
-                        line2.setVisibility(View.INVISIBLE);
-                        AnimatorSet set = new AnimatorSet();
-                        set.playTogether(
-                                ObjectAnimator.ofFloat(redTxt, "x", team1XY[0] - redXY[0], 0),
-                                ObjectAnimator.ofFloat(redTxt, "y", team1XY[1] - redXY[1], 0),
-                                ObjectAnimator.ofFloat(greenTxt, "x", team2XY[0] - greenXY[0], 0),
-                                ObjectAnimator.ofFloat(greenTxt, "y", team2XY[1] - greenXY[1], 0)
-                        );
-                        set.setDuration(300).start();
+                        set.play(ObjectAnimator.ofFloat(greenTxt, "x", team2XY[0] - dpToPx(getActivity(), 16)))
+                                .with(ObjectAnimator.ofFloat(greenTxt, "y", team2XY[1]));
+
+                        set.play(ObjectAnimator.ofFloat(venue, "y", line2.getY()));
+
+                        set.setDuration(200).start();
+                        set.addListener(new Animator.AnimatorListener() {
+                            @Override
+                            public void onAnimationStart(Animator animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationEnd(Animator animation) {
+                                venue.setAlpha(0);
+                                line1.setVisibility(View.VISIBLE);
+                                line2.setVisibility(View.VISIBLE);
+                                team1.setVisibility(View.VISIBLE);
+                                team2.setVisibility(View.VISIBLE);
+                                redTxt.setAlpha(0);
+                                greenTxt.setAlpha(0);
+                            }
+
+                            @Override
+                            public void onAnimationCancel(Animator animation) {
+
+                            }
+
+                            @Override
+                            public void onAnimationRepeat(Animator animation) {
+
+                            }
+                        });
 
                     }
+
+                } else if (postAnimatedState && xy[1] >= size) {
+                    postAnimatedState = false;
+                    Log.d("HERE", String.format("ORIG X=%d, Y=%d", redXYOrig[0], redXYOrig[1]));
+
+                    venue.setAlpha(1);
+                    line1.setVisibility(View.INVISIBLE);
+                    line2.setVisibility(View.INVISIBLE);
+                    redTxt.setVisibility(View.VISIBLE);
+                    greenTxt.setVisibility(View.VISIBLE);
+                    AnimatorSet set = new AnimatorSet();
+                    set.play(ObjectAnimator.ofFloat(redTxt, "x", redXYOrig[0]))
+                            .with(ObjectAnimator.ofFloat(redTxt, "y", redXYOrig[1]))
+                            .with(ObjectAnimator.ofFloat(redTxt, "alpha", 1));
+
+                    set.play(ObjectAnimator.ofFloat(greenTxt, "x", greenXYOrig[0]))
+                            .with(ObjectAnimator.ofFloat(greenTxt, "y", greenXYOrig[1]))
+                            .with(ObjectAnimator.ofFloat(greenTxt, "alpha", 1));
+
+                    set.play(ObjectAnimator.ofFloat(venue, "y", line1.getY()));
+
+                    set.setDuration(200).start();
 
                 }
 
@@ -183,6 +241,18 @@ public class MainActivityFragment extends Fragment {
         return view;
     }
 
+
+    public static int dpToPx(Context context, int dp) {
+        Resources r = context.getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
+        return (int) px;
+    }
+
+    public static int spToPx(Context context, int sp) {
+        Resources r = context.getResources();
+        float px = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, sp, r.getDisplayMetrics());
+        return (int) px;
+    }
 
 
 }

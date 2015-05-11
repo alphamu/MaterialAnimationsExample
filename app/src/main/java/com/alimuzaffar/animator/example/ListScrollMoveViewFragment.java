@@ -1,8 +1,5 @@
 package com.alimuzaffar.animator.example;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.content.Context;
 import android.content.res.Resources;
@@ -12,13 +9,13 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import static com.alimuzaffar.animator.example.Constants.*;
+import static com.alimuzaffar.animator.example.Constants.X;
+import static com.alimuzaffar.animator.example.Constants.Y;
 
 
 public class ListScrollMoveViewFragment extends Fragment {
@@ -244,8 +241,6 @@ public class ListScrollMoveViewFragment extends Fragment {
 
             }
         });
-
-
 
         return view;
     }

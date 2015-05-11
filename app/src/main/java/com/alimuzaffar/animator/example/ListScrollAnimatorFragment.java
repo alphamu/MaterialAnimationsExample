@@ -18,18 +18,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 
-/**
- * A placeholder fragment containing a simple view.
- */
-public class MainActivityFragment extends Fragment {
+public class ListScrollAnimatorFragment extends Fragment {
 
-    public MainActivityFragment() {
+    public ListScrollAnimatorFragment() {
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.fragment_main, container, false);
+        View view =  inflater.inflate(R.layout.fragment_listscrollanimator, container, false);
         String [] hundred = new String[100];
         for (int i= 0 ; i < 100; i++) {
             hundred[i] = "List Item " + i;
@@ -162,7 +159,7 @@ public class MainActivityFragment extends Fragment {
 
                         set.play(ObjectAnimator.ofFloat(venue, "y", line2.getY()));
 
-                        set.setDuration(200).start();
+                        set.setDuration(300).start();
                         set.addListener(new Animator.AnimatorListener() {
                             @Override
                             public void onAnimationStart(Animator animation) {
@@ -213,7 +210,7 @@ public class MainActivityFragment extends Fragment {
 
                     set.play(ObjectAnimator.ofFloat(venue, "y", line1.getY()));
 
-                    set.setDuration(200).start();
+                    set.setDuration(300).start();
 
                 }
 

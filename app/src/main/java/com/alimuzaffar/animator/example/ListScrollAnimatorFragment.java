@@ -27,15 +27,11 @@ public class ListScrollAnimatorFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_listscrollanimator, container, false);
-        String [] hundred = new String[100];
-        for (int i= 0 ; i < 100; i++) {
-            hundred[i] = "List Item " + i;
-        }
 
         final View header = inflater.inflate(R.layout.listview_header, null);
         final View headerTwo = inflater.inflate(R.layout.listview_header_two, null);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, hundred);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_list_item_1, Cheeses.sCheeseStrings);
         ListView listView = (ListView) view.findViewById(R.id.listview);
         listView.addHeaderView(header);
         listView.addHeaderView(headerTwo);
